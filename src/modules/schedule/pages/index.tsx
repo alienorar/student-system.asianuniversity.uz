@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Calendar, Clock, Users, MapPin } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 import CameraModal from "./modal"
 import { useGetStudentSchedule } from "../hooks/queries"
 
@@ -188,7 +188,7 @@ export default function SchedulePage() {
                         </span>
                       </div>
                     </div>
-                    <Button
+                    {/* <Button
                       onClick={() => {
                         setCurrentLessonId(lesson.id)
                         setIsCameraOpen(true)
@@ -196,7 +196,7 @@ export default function SchedulePage() {
                       className="mt-3 w-full sm:w-auto bg-sky-500 text-white hover:bg-sky-600 rounded-lg text-xs sm:text-sm px-3 sm:px-4 py-2"
                     >
                       Darsni boshlash
-                    </Button>
+                    </Button> */}
                   </div>
                 ))}
               </CardContent>
