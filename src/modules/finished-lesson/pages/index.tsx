@@ -1,11 +1,20 @@
 import { useState } from "react";
-import { useGetFinishedLesson,} from "../hooks/queries";
+import { useGetFinishedLesson } from "../hooks/queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Clock, AlertCircle, User, Calendar, Timer, Star } from "lucide-react";
 import { useSetFeedback } from "../hooks/mutations";
+
+// Define the Feedback type
+interface Feedback {
+  id: number | string;
+  lessonSessionId: number | string;
+  comment: string;
+  rating: number;
+  createdAt: string | Date;
+}
 
 // Define the Lesson type according to the expected lesson object structure
 interface Lesson {
@@ -14,11 +23,12 @@ interface Lesson {
   startedAt?: string | Date;
   endedAt?: string | Date;
   delayInSeconds?: number;
+  feedback?: Feedback | null;
 }
 
 const Index = () => {
   const { data, isLoading, error } = useGetFinishedLesson();
-  const {mutate :setFeedbackMutation,isPending} = useSetFeedback();
+  const { mutate: setFeedbackMutation, isPending } = useSetFeedback();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLessonId, setSelectedLessonId] = useState<string | number | null>(null);
   const [rating, setRating] = useState<number>(0);
@@ -55,8 +65,8 @@ const Index = () => {
   };
 
   return (
-    <div className="container mx-auto p-6  min-h-screen">
-      <h1 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100 mb-6 tracking-tight">
+    <div className="container mx-auto p-6 min-h-screen">
+      <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8 tracking-tight">
         Finished Lessons
       </h1>
 
@@ -65,14 +75,14 @@ const Index = () => {
           {[...Array(3)].map((_, index) => (
             <Card
               key={index}
-              className="bg-card/95 backdrop-blur-sm border-0 shadow-lg rounded-xl"
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-2xl"
             >
-              <CardHeader className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900">
-                <Skeleton className="h-6 w-3/4" />
+              <CardHeader className="p-5 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900 dark:to-blue-900">
+                <Skeleton className="h-7 w-3/4 rounded-md" />
               </CardHeader>
-              <CardContent className="p-4 space-y-3">
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
+              <CardContent className="p-5 space-y-4">
+                <Skeleton className="h-16 w-full rounded-md" />
+                <Skeleton className="h-16 w-full rounded-md" />
               </CardContent>
             </Card>
           ))}
@@ -112,57 +122,94 @@ const Index = () => {
           {lessons.map((lesson: Lesson) => (
             <Card
               key={lesson.id ?? `lesson-${Math.random()}`}
-              className="bg-card/95 backdrop-blur-sm border-0 shadow-lg rounded-xl overflow-hidden transition-shadow duration-300 hover:shadow-xl dark:bg-gray-800/95"
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md rounded-2xl overflow-hidden transition-transform duration-300 hover:scale-[1.02] hover:shadow-xl"
             >
-              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 p-4">
-                <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <CardHeader className="p-5 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900 dark:to-blue-900">
+                <CardTitle className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+                  <Calendar className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                   Lesson #{lesson.id ?? "N/A"}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-4">
-                <div className="space-y-3 text-gray-700 dark:text-gray-300 text-sm">
-                  <div className="flex items-center gap-2 bg-gray-50/50 dark:bg-gray-800/50 px-3 py-1.5 rounded-md">
-                    <User className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                    <span>
+              <CardContent className="p-5">
+                <div className="space-y-4 text-gray-700 dark:text-gray-300 text-sm">
+                  <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700/50 px-4 py-2 rounded-lg">
+                    <User className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <span className="font-medium">
                       <strong>Teacher:</strong> {lesson.teacherName ?? "Unknown"}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 bg-gray-50/50 dark:bg-gray-800/50 px-3 py-1.5 rounded-md">
-                    <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                    <span>
+                  <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700/50 px-4 py-2 rounded-lg">
+                    <Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <span className="font-medium">
                       <strong>Started:</strong>{" "}
                       {lesson.startedAt
                         ? new Date(lesson.startedAt).toLocaleString()
                         : "N/A"}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 bg-gray-50/50 dark:bg-gray-800/50 px-3 py-1.5 rounded-md">
-                    <Calendar className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                    <span>
+                  <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700/50 px-4 py-2 rounded-lg">
+                    <Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <span className="font-medium">
                       <strong>Ended:</strong>{" "}
                       {lesson.endedAt
                         ? new Date(lesson.endedAt).toLocaleString()
                         : "N/A"}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 bg-gray-50/50 dark:bg-gray-800/50 px-3 py-1.5 rounded-md">
-                    <Timer className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                    <span>
+                  <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-700/50 px-4 py-2 rounded-lg">
+                    <Timer className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <span className="font-medium">
                       <strong>Delay:</strong>{" "}
                       {lesson.delayInSeconds != null
                         ? `${lesson.delayInSeconds} seconds`
                         : "N/A"}
                     </span>
                   </div>
-                  <div className="flex justify-end">
-                    <Button
-                      onClick={() => openModal(lesson.id ?? "")}
-                      className="bg-indigo-500 text-white hover:bg-indigo-600 dark:bg-indigo-600 dark:hover:bg-indigo-700 rounded-lg text-sm px-4 py-1.5 transition-colors duration-200"
-                    >
-                      Darsni Baholash
-                    </Button>
-                  </div>
+                  {lesson.feedback ? (
+                    <div className="space-y-3 bg-gray-50 dark:bg-gray-700/50 px-4 py-2 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Star className="h-5 w-5 text-yellow-500 dark:text-yellow-400" />
+                        <span className="font-medium">
+                          <strong>Rating:</strong>{" "}
+                          <div className="inline-flex">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`h-5 w-5 ${
+                                  star <= (lesson.feedback?.rating ?? 0)
+                                    ? "text-yellow-500 dark:text-yellow-400 fill-current"
+                                    : "text-gray-300 dark:text-gray-500"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium">
+                          <strong>Comment:</strong> {lesson.feedback.comment ?? "No comment"}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                        <span className="font-medium">
+                          <strong>Feedback Given:</strong>{" "}
+                          {lesson.feedback.createdAt
+                            ? new Date(lesson.feedback.createdAt).toLocaleString()
+                            : "N/A"}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-end">
+                      <Button
+                        onClick={() => openModal(lesson.id ?? "")}
+                        className="bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-lg text-sm font-medium px-5 py-2 transition-colors duration-200"
+                      >
+                        Darsni Baholash
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -172,8 +219,8 @@ const Index = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-xl w-full max-w-md">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               Darsni Baholash
             </h2>
             <div className="flex justify-center mb-4">
@@ -194,26 +241,26 @@ const Index = () => {
               ))}
             </div>
             <textarea
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md mb-4 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
+              className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg mb-4 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400"
               placeholder="Fayl biriktirish va izoh qoldirish"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              rows={3}
+              rows={4}
             />
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-3">
               <Button
                 onClick={closeModal}
                 variant="outline"
-                className="mr-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg px-4 py-1.5"
+                className="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 rounded-lg px-5 py-2 font-medium"
               >
                 Yopish
               </Button>
               <Button
                 onClick={submitFeedback}
                 disabled={rating === 0 || isPending}
-                className="bg-yellow-200 dark:bg-yellow-700 text-gray-800 dark:text-gray-100 hover:bg-yellow-300 dark:hover:bg-yellow-600 rounded-lg px-4 py-1.5 transition-colors duration-200"
+                className="bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 rounded-lg px-5 py-2 font-medium transition-colors duration-200"
               >
-                {isPending? "Yuborilmoqda..." : "Baholash"}
+                {isPending ? "Yuborilmoqda..." : "Baholash"}
               </Button>
             </div>
           </div>

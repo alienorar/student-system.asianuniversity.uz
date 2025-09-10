@@ -43,8 +43,8 @@ export default function SchedulePage() {
   console.log("Teacher Employee ID:", teacherEmployeeId)
 
   const [params, setParams] = useState({
-    limit: 100,
-    page: 1,
+    size: 100,
+    page: 0,
     time: "TODAY",
   })
   const [isCameraOpen, setIsCameraOpen] = useState(false)

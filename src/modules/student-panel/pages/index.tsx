@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect, createContext, useContext } from "react"
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import { Menu, Moon, Sun, Home, BookOpen, Users, BarChart3, Calendar, Settings, LogOut } from "lucide-react"
+import { Menu, Moon, Sun, BookOpen, LogOut } from "lucide-react"
 import { routesConfig } from "@/router/routes"
 // Import logout function (uncomment if available)
 // import { logout } from "@/utils/token-service";
