@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -19,14 +18,31 @@ interface Feedback {
   createdAt: string | Date;
 }
 
-// Define the Lesson type according to the expected lesson object structure
+// Define the Lesson type according to the JSON response
 interface Lesson {
-  id?: number | string;
-  teacherName?: string;
-  startedAt?: string | Date;
-  endedAt?: string | Date;
-  delayInSeconds?: number;
-  feedback?: Feedback | null;
+  id: number | string;
+  teacherName: string;
+  subjectId: number;
+  subjectName: string;
+  startedAt: string | Date;
+  endedAt: string | Date;
+  delayInSeconds: number;
+  feedback: Feedback | null;
+}
+
+// Define the Subject type based on the JSON response
+interface Subject {
+  subjectId: number;
+  subjectName: string;
+  lessons: Lesson[];
+}
+
+// Define the Response type
+interface ResponseData {
+  timestamp: number;
+  success: boolean;
+  errorMessage: string;
+  data: Subject[];
 }
 
 const Index = () => {
@@ -37,10 +53,13 @@ const Index = () => {
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
 
-  // Safe access to data with fallback
-  const lessons = data?.data ?? [];
-  const isSuccess = data?.success ?? false;
-  const errorMessage = data?.errorMessage ?? "Kutilmagan xatolik yuz berdi.";
+  // Flatten the lessons from all subjects into a single array
+  const lessons: Lesson[] =
+    (data as ResponseData)?.data?.flatMap((subject: Subject) => subject.lessons) ?? [];
+
+  console.log("Lessons Data:", lessons);
+  const isSuccess = (data as ResponseData)?.success ?? false;
+  const errorMessage = (data as ResponseData)?.errorMessage ?? "Kutilmagan xatolik yuz berdi.";
 
   const openModal = (lessonId: string | number) => {
     setSelectedLessonId(lessonId);
@@ -67,9 +86,6 @@ const Index = () => {
       );
     }
   };
-
-  console.log("Finished Lessons Data:", data);
-  console.log("Lessons:", lessons);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950/30 p-4 sm:p-6 lg:p-8">
@@ -169,15 +185,15 @@ const Index = () => {
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {lessons.map((lesson: Lesson, index: number) => (
             <Card
-              key={lesson.id ?? `lesson-${Math.random()}`}
+              key={lesson.id}
               className="group relative overflow-hidden bg-white/70 dark:bg-slate-800/70 backdrop-blur-xl border-0 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               style={{
-                animationDelay: `${index * 100}ms`
+                animationDelay: `${index * 100}ms`,
               }}
             >
               {/* Animated gradient background */}
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-indigo-500/5 to-blue-500/10 group-hover:from-purple-500/20 group-hover:via-indigo-500/10 group-hover:to-blue-500/20 transition-all duration-500"></div>
-              
+
               {/* Floating orbs for visual interest */}
               <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
               <div className="absolute bottom-4 left-4 w-8 h-8 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-lg group-hover:scale-125 transition-transform duration-500"></div>
@@ -187,7 +203,7 @@ const Index = () => {
                   <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                     <BookOpen className="h-5 w-5" />
                   </div>
-                  <span className="drop-shadow-sm">Dars #{lesson.id ?? "N/A"}</span>
+                  <span className="drop-shadow-sm">{lesson.subjectName}</span>
                 </CardTitle>
               </CardHeader>
 
@@ -277,7 +293,7 @@ const Index = () => {
                           </div>
                         </div>
                       </div>
-                      
+
                       {lesson.feedback.comment && (
                         <div className="flex items-start gap-3">
                           <MessageSquare className="h-4 w-4 text-slate-600 dark:text-slate-400 mt-1 flex-shrink-0" />
@@ -289,7 +305,7 @@ const Index = () => {
                           </div>
                         </div>
                       )}
-                      
+
                       <div className="flex items-center gap-3 pt-2 border-t border-yellow-200/50 dark:border-yellow-800/50">
                         <Calendar className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                         <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -305,7 +321,7 @@ const Index = () => {
                   ) : (
                     <div className="pt-2">
                       <Button
-                        onClick={() => openModal(lesson.id ?? "")}
+                        onClick={() => openModal(lesson.id)}
                         className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] font-semibold py-3 text-sm"
                       >
                         <div className="flex items-center gap-2">
@@ -329,7 +345,7 @@ const Index = () => {
             {/* Modal background with glassmorphism */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/90 to-white/70 dark:from-slate-800/90 dark:to-slate-900/70 backdrop-blur-xl rounded-3xl"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-indigo-500/5 to-blue-500/10 rounded-3xl"></div>
-            
+
             <div className="relative bg-transparent p-8 rounded-3xl shadow-2xl w-full max-w-md border border-white/20 dark:border-slate-700/50">
               <div className="text-center mb-6">
                 <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
@@ -358,9 +374,9 @@ const Index = () => {
                       }`}
                       onClick={() => setRating(star)}
                     >
-                      <Star 
-                        className="h-8 w-8" 
-                        fill={rating >= star ? "currentColor" : "none"} 
+                      <Star
+                        className="h-8 w-8"
+                        fill={rating >= star ? "currentColor" : "none"}
                       />
                     </Button>
                   ))}
