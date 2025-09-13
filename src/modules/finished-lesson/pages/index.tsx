@@ -57,9 +57,8 @@ const Index = () => {
   const lessons: Lesson[] =
     (data as ResponseData)?.data?.flatMap((subject: Subject) => subject.lessons) ?? [];
 
-  console.log("Lessons Data:", lessons);
   const isSuccess = (data as ResponseData)?.success ?? false;
-  const errorMessage = (data as ResponseData)?.errorMessage ?? "Kutilmagan xatolik yuz berdi.";
+  const errorMessage = (data as ResponseData)?.errorMessage ?? "An unexpected error occurred.";
 
   const openModal = (lessonId: string | number) => {
     setSelectedLessonId(lessonId);
@@ -87,6 +86,15 @@ const Index = () => {
     }
   };
 
+  // Convert delay from seconds to minutes
+  const formatDelay = (delayInSeconds: number) => {
+    if (delayInSeconds == null || delayInSeconds <= 0) {
+      return "No Delay";
+    }
+    const minutes = Math.floor(delayInSeconds / 60);
+    return `${minutes} minutes`;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950/30 p-4 sm:p-6 lg:p-8">
       {/* Modern floating header */}
@@ -98,10 +106,10 @@ const Index = () => {
             </div>
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
-                Tugallangan Darslar
+                Completed Lessons
               </h1>
               <p className="text-slate-600 dark:text-slate-400 font-medium mt-1">
-                O'tkazilgan darslar va baholash
+                Review completed lessons and provide feedback
               </p>
             </div>
           </div>
@@ -136,10 +144,10 @@ const Index = () => {
               </div>
               <div>
                 <AlertTitle className="text-lg font-semibold text-red-800 dark:text-red-200">
-                  Xatolik
+                  Error
                 </AlertTitle>
                 <AlertDescription className="text-red-700 dark:text-red-300 mt-1">
-                  Darslarni yuklashda xatolik: {error.message}
+                  Error loading lessons: {error.message}
                 </AlertDescription>
               </div>
             </div>
@@ -154,7 +162,7 @@ const Index = () => {
               </div>
               <div>
                 <AlertTitle className="text-lg font-semibold text-red-800 dark:text-red-200">
-                  Xatolik
+                  Error
                 </AlertTitle>
                 <AlertDescription className="text-red-700 dark:text-red-300 mt-1">
                   {errorMessage}
@@ -172,10 +180,10 @@ const Index = () => {
               </div>
               <div>
                 <AlertTitle className="text-lg font-semibold text-slate-800 dark:text-slate-200">
-                  Ma'lumot yo'q
+                  No Data
                 </AlertTitle>
                 <AlertDescription className="text-slate-700 dark:text-slate-300 mt-1">
-                  Hozircha tugallangan darslar mavjud emas.
+                  No completed lessons available yet.
                 </AlertDescription>
               </div>
             </div>
@@ -215,9 +223,9 @@ const Index = () => {
                       <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">O'qituvchi</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Teacher</p>
                       <p className="font-bold text-blue-700 dark:text-blue-300">
-                        {lesson.teacherName ?? "Noma'lum"}
+                        {lesson.teacherName ?? "Unknown"}
                       </p>
                     </div>
                   </div>
@@ -228,11 +236,11 @@ const Index = () => {
                       <Calendar className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Boshlangan vaqt</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Start Time</p>
                       <p className="font-bold text-emerald-700 dark:text-emerald-300">
                         {lesson.startedAt
-                          ? new Date(lesson.startedAt).toLocaleString("uz-UZ")
-                          : "Ma'lum emas"}
+                          ? new Date(lesson.startedAt).toLocaleString("en-US")
+                          : "Unknown"}
                       </p>
                     </div>
                   </div>
@@ -243,11 +251,11 @@ const Index = () => {
                       <Clock className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Tugallangan vaqt</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">End Time</p>
                       <p className="font-bold text-orange-700 dark:text-orange-300">
                         {lesson.endedAt
-                          ? new Date(lesson.endedAt).toLocaleString("uz-UZ")
-                          : "Ma'lum emas"}
+                          ? new Date(lesson.endedAt).toLocaleString("en-US")
+                          : "Unknown"}
                       </p>
                     </div>
                   </div>
@@ -258,11 +266,9 @@ const Index = () => {
                       <Timer className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Kechikish</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Delay</p>
                       <p className="font-bold text-purple-700 dark:text-purple-300">
-                        {lesson.delayInSeconds != null
-                          ? `${lesson.delayInSeconds} soniya`
-                          : "Ma'lum emas"}
+                        {formatDelay(lesson.delayInSeconds)}
                       </p>
                     </div>
                   </div>
@@ -275,7 +281,7 @@ const Index = () => {
                           <Award className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
                         </div>
                         <div>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Baholash</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Feedback</p>
                           <div className="flex items-center gap-1">
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star
@@ -298,7 +304,7 @@ const Index = () => {
                         <div className="flex items-start gap-3">
                           <MessageSquare className="h-4 w-4 text-slate-600 dark:text-slate-400 mt-1 flex-shrink-0" />
                           <div>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-1">Izoh</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mb-1">Comment</p>
                             <p className="text-sm text-slate-700 dark:text-slate-300 bg-white/50 dark:bg-slate-800/50 p-3 rounded-lg">
                               {lesson.feedback.comment}
                             </p>
@@ -309,11 +315,11 @@ const Index = () => {
                       <div className="flex items-center gap-3 pt-2 border-t border-yellow-200/50 dark:border-yellow-800/50">
                         <Calendar className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Baholangan: {" "}
+                          Feedback Given: {" "}
                           <span className="font-medium">
                             {lesson.feedback.createdAt
-                              ? new Date(lesson.feedback.createdAt).toLocaleString("uz-UZ")
-                              : "Ma'lum emas"}
+                              ? new Date(lesson.feedback.createdAt).toLocaleString("en-US")
+                              : "Unknown"}
                           </span>
                         </p>
                       </div>
@@ -326,7 +332,7 @@ const Index = () => {
                       >
                         <div className="flex items-center gap-2">
                           <Star className="h-4 w-4" />
-                          Darsni Baholash
+                          Rate Lesson
                         </div>
                       </Button>
                     </div>
@@ -352,10 +358,10 @@ const Index = () => {
                   <Star className="h-8 w-8 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">
-                  Darsni Baholash
+                  Rate Lesson
                 </h2>
                 <p className="text-slate-600 dark:text-slate-400">
-                  Dars sifatini baholang va fikringizni bildiring
+                  Rate the quality of the lesson and leave your feedback
                 </p>
               </div>
 
@@ -386,11 +392,11 @@ const Index = () => {
               {/* Comment Textarea */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Izoh va takliflar
+                  Comment
                 </label>
                 <textarea
                   className="w-full p-4 bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm border border-white/50 dark:border-slate-600/50 rounded-xl text-slate-800 dark:text-slate-200 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all duration-300 resize-none"
-                  placeholder="Dars haqida fikringizni bildiring..."
+                  placeholder="Leave your feedback about the lesson..."
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   rows={4}
@@ -404,7 +410,7 @@ const Index = () => {
                   variant="outline"
                   className="flex-1 bg-white/70 dark:bg-slate-700/70 backdrop-blur-sm border border-white/50 dark:border-slate-600/50 text-slate-700 dark:text-slate-300 hover:bg-white/90 dark:hover:bg-slate-600/90 rounded-xl font-medium transition-all duration-300"
                 >
-                  Bekor qilish
+                  Cancel
                 </Button>
                 <Button
                   onClick={submitFeedback}
@@ -414,12 +420,12 @@ const Index = () => {
                   {isPending ? (
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Yuborilmoqda...
+                      Submitting...
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
                       <Star className="h-4 w-4" />
-                      Baholash
+                      Submit
                     </div>
                   )}
                 </Button>
