@@ -1,308 +1,228 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Mail, Phone, CreditCard, BookOpen, Users, BarChart3, Calendar, Sparkles,  GraduationCap } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { useNavigate } from "react-router-dom";
-import { useGetStudentProfile } from "../hooks/queries";
+import { useEffect, useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+// import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { CalendarIcon, TrendingUp, Clock, BookOpen, Star, AlertCircle } from "lucide-react"
+import { useGetLessonStatistics } from "../hooks/queries"
 
-// Define the StudentData interface based on the provided student data
-interface StudentData {
-  id: number;
-  fullName: string;
-  studentIdNumber: string;
-  email: string;
-  phone: string;
-  birthDateLocalDate: string;
-  genderName: string;
-  university: string;
-  specialtyName: string;
-  groupName: string;
-  facultyName: string;
-  educationFormName: string;
-  paymentFormName: string;
-  levelName: string;
-  semesterName: string;
-  semesterEducationYearName: string;
-  avgGpa: string;
-  address: string;
-  image?: string;
-}
+const Index = () => {
+  const [searchParams, setSearchParams] = useState({
+    startDate: "2024-01-01",
+    endDate: "2024-12-31",
+  })
+  const [statistics, setStatistics] = useState<any>()
 
-export default function StudentDashboard() {
-  // Initialize state with default values
-  const [studentData, setStudentData] = useState<StudentData>({
-    id: 0,
-    fullName: "",
-    studentIdNumber: "",
-    email: "",
-    phone: "",
-    birthDateLocalDate: "",
-    genderName: "",
-    university: "",
-    specialtyName: "",
-    groupName: "",
-    facultyName: "",
-    educationFormName: "",
-    paymentFormName: "",
-    levelName: "",
-    semesterName: "",
-    semesterEducationYearName: "",
-    avgGpa: "",
-    address: "",
-    image: "",
-  });
+  // Pass only startDate and endDate to the hook
+  const { data: lessonStatistics } = useGetLessonStatistics({
+    startDate: searchParams.startDate,
+    endDate: searchParams.endDate,
+  })
 
-  const navigate = useNavigate();
-  const { data, isLoading } = useGetStudentProfile();
-
-  console.log("Profile Data:", data);
-
-  // Update studentData when data is fetched
   useEffect(() => {
-    if (data?.data?.student) {
-      setStudentData({
-        id: data.data.student.id,
-        fullName: data.data.student.fullName,
-        studentIdNumber: data.data.student.studentIdNumber,
-        email: data.data.student.email,
-        phone: data.data.student.phone,
-        birthDateLocalDate: data.data.student.birthDateLocalDate,
-        genderName: data.data.student.genderName,
-        university: data.data.student.university,
-        specialtyName: data.data.student.specialtyName,
-        groupName: data.data.student.groupName,
-        facultyName: data.data.student.facultyName,
-        educationFormName: data.data.student.educationFormName,
-        paymentFormName: data.data.student.paymentFormName,
-        levelName: data.data.student.levelName,
-        semesterName: data.data.student.semesterName,
-        semesterEducationYearName: data.data.student.semesterEducationYearName,
-        avgGpa: data.data.student.avgGpa,
-        address: data.data.student.address,
-        image: data.data.student.image,
-      });
+    if (lessonStatistics?.data) {
+      setStatistics(lessonStatistics?.data)
     }
-  }, [data]);
+  }, [lessonStatistics])
 
-  // Quick actions tailored for students
-  const quickActions = [
-    {
-      title: "Dars Jadvali",
-      description: "Jadvalni ko'rish",
-      icon: Calendar,
-      gradient: "from-blue-500 to-cyan-500",
-      path: "/student-panel/schedule",
-    },
-    {
-      title: "Baholar",
-      description: "Baho natijalari",
-      icon: BarChart3,
-      gradient: "from-emerald-500 to-teal-500",
-      path: "/student-panel/grades",
-    },
-    {
-      title: "Kurslar",
-      description: "O'quv kurslari",
-      icon: BookOpen,
-      gradient: "from-purple-500 to-pink-500",
-      path: "/student-panel/courses",
-    },
-    {
-      title: "Guruh",
-      description: "Guruh ma'lumotlari",
-      icon: Users,
-      gradient: "from-orange-500 to-red-500",
-      path: "/student-panel/group",
-    },
-  ];
+  const handleStartDateChange = (value: string) => {
+    setSearchParams((prev) => ({ ...prev, startDate: value }))
+  }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-400 via-sky-400 to-blue-800 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4 sm:p-6">
-      <div className="max-w-full sm:max-w-7xl mx-auto space-y-6 sm:space-y-8">
-        {/* Hero Header with Gradient */}
-        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white/10 dark:bg-black/20 backdrop-blur-lg border border-white/20 dark:border-white/10 shadow-xl sm:shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-r from-white/5 dark:from-white/2 to-transparent"></div>
-          <CardHeader className="relative z-10 text-center py-8 sm:py-12">
-            <div className="flex justify-center mb-4 sm:mb-6">
-              <div className="relative">
-                <Avatar className="h-24 w-24 sm:h-32 sm:w-32 border-4 border-white/30 dark:border-white/20 shadow-lg sm:shadow-xl">
-                  {studentData.image ? (
-                    <AvatarImage src={studentData.image || "/placeholder.svg"} alt="Profile" style={{ objectFit: "cover" }} />
-                  ) : (
-                    <AvatarFallback className="text-2xl sm:text-4xl bg-gradient-to-br from-white/20 dark:from-white/10 to-white/10 dark:to-white/5 text-white">
-                      {studentData.fullName?.split(" ")[0]?.[0] || "S"}
-                      {studentData.fullName?.split(" ")[1]?.[0] || ""}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full p-1.5 sm:p-2">
-                  <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
-                </div>
-              </div>
-            </div>
-            <CardTitle className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4 tracking-tight">
-              Xush kelibsiz, {studentData.fullName.split(" ")[0]}!
-            </CardTitle>
-            <CardDescription className="text-base sm:text-lg md:text-xl text-white/80 dark:text-white/70 max-w-xl sm:max-w-2xl mx-auto">
-              HEMIS tizimida o'quv jarayonini boshqaring va muvaffaqiyatga erishing.
-            </CardDescription>
-          </CardHeader>
-        </div>
+  const handleEndDateChange = (value: string) => {
+    setSearchParams((prev) => ({ ...prev, endDate: value }))
+  }
 
-        <div className="grid gap-6 sm:gap-8">
-          {/* Personal Information Card */}
-          <Card className="bg-white/95 dark:bg-card/95 backdrop-blur-sm border-0 shadow-lg sm:shadow-2xl rounded-xl sm:rounded-2xl overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-700 dark:to-violet-700 p-4 sm:p-6">
-              <CardTitle className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 sm:gap-3">
-                <User className="h-5 w-5 sm:h-6 sm:w-6" />
-                Shaxsiy Ma'lumotlar
-              </CardTitle>
-              <CardDescription className="text-white/80 mt-1 sm:mt-2 text-sm sm:text-base">
-                Talaba haqidagi asosiy ma'lumotlar va o'quv ma'lumotlari
-              </CardDescription>
-            </div>
-            <CardContent className="p-4 sm:p-6 lg:p-8">
-              {isLoading ? (
-                <div className="space-y-4">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                  <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-100 dark:border-blue-800/30">
-                      <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-2 sm:p-3 rounded-lg">
-                        <User className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">To'liq Ism</p>
-                        <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{studentData.fullName}</p>
-                      </div>
-                    </div>
+  const formatTime = (seconds: number | null) => {
+    if (seconds === null || seconds === 0) return "N/A"
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}m ${remainingSeconds}s`
+  }
 
-                    <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-100 dark:border-emerald-800/30">
-                      <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-2 sm:p-3 rounded-lg">
-                        <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">Email</p>
-                        <p className="text-[14px] font-semibold text-gray-900 dark:text-white">{studentData.email || "N/A"}</p>
-                      </div>
-                    </div>
+  const getRatingColor = (rating: number) => {
+    if (rating >= 4) return "bg-green-500"
+    if (rating >= 3) return "bg-yellow-500"
+    return "bg-red-500"
+  }
 
-                    <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-100 dark:border-purple-800/30">
-                      <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-2 sm:p-3 rounded-lg">
-                        <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">Talaba ID</p>
-                        <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{studentData.studentIdNumber}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 sm:space-y-6">
-                    <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-100 dark:border-orange-800/30">
-                      <div className="bg-gradient-to-r from-orange-500 to-red-500 p-2 sm:p-3 rounded-lg">
-                        <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">Telefon</p>
-                        <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{studentData.phone}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-100 dark:border-green-800/30">
-                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-2 sm:p-3 rounded-lg">
-                        <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">Mutaxassislik</p>
-                        <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{studentData.specialtyName}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-100 dark:border-indigo-800/30">
-                      <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-2 sm:p-3 rounded-lg">
-                        <Users className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-medium">Guruh</p>
-                        <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">{studentData.groupName}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <Separator className="my-6 sm:my-8" />
-
-              <div className="p-4 sm:p-6 rounded-lg sm:rounded-xl bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800/50 dark:to-slate-800/50 border border-gray-200 dark:border-gray-700">
-                <h4 className="font-semibold text-base sm:text-lg text-gray-900 dark:text-white mb-2 sm:mb-3">O'quv Ma'lumotlari</h4>
-                {isLoading ? (
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-                ) : (
-                  <div className="space-y-2 text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <p><strong>Fakultet:</strong> {studentData.facultyName}</p>
-                    <p><strong>Ta'lim Shakli:</strong> {studentData.educationFormName}</p>
-                    <p><strong>To'lov Shakli:</strong> {studentData.paymentFormName}</p>
-                    <p><strong>Kurs:</strong> {studentData.levelName}</p>
-                    <p><strong>Semestr:</strong> {studentData.semesterName} ({studentData.semesterEducationYearName})</p>
-                    <p><strong>O'rtacha GPA:</strong> {studentData.avgGpa}</p>
-                    <p><strong>Manzil:</strong> {studentData.address}</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card className="bg-white/95 dark:bg-card/95 backdrop-blur-sm border-0 shadow-lg sm:shadow-2xl rounded-xl sm:rounded-2xl overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-700 dark:to-violet-700 p-4 sm:p-6">
-              <CardTitle className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 sm:gap-3">
-                <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" />
-                Tezkor Harakatlar
-              </CardTitle>
-              <CardDescription className="text-white/80 mt-1 sm:mt-2 text-sm sm:text-base">
-                Tez-tez ishlatiladigan funksiyalar va imkoniyatlar
-              </CardDescription>
-            </div>
-            <CardContent className="p-4 sm:p-6 lg:p-8">
-              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                {quickActions.map((action, index) => (
-                  <Card
-                    key={index}
-                    className="group relative overflow-hidden border-0 shadow-md sm:shadow-lg hover:shadow-xl sm:hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 sm:hover:-translate-y-2 bg-card"
-                    onClick={() => navigate(action.path)}
-                  >
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${action.gradient} opacity-10 group-hover:opacity-20 transition-opacity`}
-                    ></div>
-                    <CardContent className="relative p-4 sm:p-6 text-center">
-                      <div
-                        className={`inline-flex p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br ${action.gradient} mb-3 sm:mb-4 group-hover:scale-105 sm:group-hover:scale-110 transition-transform`}
-                      >
-                        <action.icon className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-                      </div>
-                      <CardTitle className="font-bold text-base sm:text-lg text-foreground mb-1 sm:mb-2 group-hover:text-muted-foreground transition-colors">
-                        {action.title}
-                      </CardTitle>
-                      <CardDescription className="text-sm sm:text-base text-muted-foreground">{action.description}</CardDescription>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+  if (!statistics) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading statistics...</p>
         </div>
       </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex flex-col space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Lesson Statistics Dashboard</h1>
+        <p className="text-muted-foreground">Track lesson performance, ratings, and attendance metrics</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarIcon className="h-5 w-5" />
+            Filters
+          </CardTitle>
+          <CardDescription>Filter statistics by date range</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="startDate">From Date</Label>
+            <Input
+              id="startDate"
+              type="date"
+              value={searchParams.startDate}
+              onChange={(e) => handleStartDateChange(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="endDate">To Date</Label>
+            <Input
+              id="endDate"
+              type="date"
+              value={searchParams.endDate}
+              onChange={(e) => handleEndDateChange(e.target.value)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Lessons (Year)</CardTitle>
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{statistics.lessonCountForCurrentYear || 0}</div>
+            <p className="text-xs text-muted-foreground">{statistics.lessonCountForInterval || 0} in selected period</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {Math.round((statistics.finishedLessonLoadPercentageForInterval || 0) * 100)}%
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {statistics.finishedLessonCount || 0} finished, {statistics.canceledLessonCount || 0} canceled
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Average Late Time</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatTime(statistics.averageLateTime)}</div>
+            <p className="text-xs text-muted-foreground">Total: {formatTime(statistics.allLateTime)}</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Ratings</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{statistics.allLessonRatings || 0}</div>
+            <p className="text-xs text-muted-foreground">From {statistics.subjects?.length || 0} subjects</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {statistics.monthlyLateList && statistics.monthlyLateList.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5" />
+              Monthly Late Statistics
+            </CardTitle>
+            <CardDescription>Late arrival patterns by month</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {statistics.monthlyLateList.map((month: any, index: number) => (
+                <div key={index} className="p-4 border rounded-lg">
+                  <h4 className="font-semibold text-lg">{month.monthName}</h4>
+                  <div className="mt-2 space-y-1">
+                    <p className="text-sm text-muted-foreground">
+                      Late Count: <span className="font-medium">{month.lateCount}</span>
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Total Late Time: <span className="font-medium">{formatTime(month.lateInSeconds)}</span>
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Average: <span className="font-medium">{formatTime(month.averageLateTime)}</span>
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Star className="h-5 w-5" />
+            Subject Ratings
+          </CardTitle>
+          <CardDescription>Average ratings for subjects in the selected period</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Subject</TableHead>
+                <TableHead>Rating</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {statistics.subjects?.length > 0 ? (
+                statistics.subjects.map((subject: any, index: number) => (
+                  <TableRow key={subject.subjectId || index}>
+                    <TableCell className="max-w-[200px] truncate" title={subject.subjectName}>
+                      {subject.subjectName}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${getRatingColor(subject.averageRating)}`}></div>
+                        <span className="font-medium">{subject.averageRating.toFixed(2)}/5</span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={2} className="text-center text-muted-foreground">
+                    No subject ratings available for the selected date range.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }
+
+export default Index
