@@ -13,7 +13,7 @@ export function useSignInMutation() {
             const access_token = response?.data?.accessToken;
             console.log(response?.data.accessToken);
             setAccessToken(access_token);
-            navigate("/student-panel");
+            navigate("/student-panel/statistics");
         },
         onError: (error: any) => {
             console.log(error)

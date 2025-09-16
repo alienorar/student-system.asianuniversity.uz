@@ -5,8 +5,8 @@ import { Calendar, User } from "lucide-react"
 
 export const routesConfig = [
       {
-        path: "/student-panel",
-        label: "Profil",
+        path: "/student-panel/statistics",
+        label: "Statistika",
         element: Profile,
         icon:User,
         

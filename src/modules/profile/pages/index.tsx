@@ -1,98 +1,126 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-// import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { CalendarIcon, TrendingUp, Clock, BookOpen, Star, AlertCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { CalendarIcon, TrendingUp, Clock, BookOpen, Star} from "lucide-react"
 import { useGetLessonStatistics } from "../hooks/queries"
 
 const Index = () => {
-  const [searchParams, setSearchParams] = useState({
-    startDate: "2024-01-01",
-    endDate: "2024-12-31",
-  })
-  const [statistics, setStatistics] = useState<any>()
+  // Sukut bo'yicha sanalarni o'rnatish
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const defaultDateFrom = `${currentYear}-09-01`;
+  const defaultDateTo = today.toISOString().split('T')[0];
 
-  // Pass only startDate and endDate to the hook
+  // Vaqtinchalik kiritilgan qiymatlar uchun holat
+  const [tempSearchParams, setTempSearchParams] = useState({
+    size: 10,
+    page: 0,
+    startDate: defaultDateFrom,
+    endDate: defaultDateTo,
+  });
+
+  // Qo'llanilgan qidiruv parametrlari uchun holat
+  const [searchParams, setSearchParams] = useState({
+    size: 10,
+    page: 0,
+    startDate: defaultDateFrom,
+    endDate: defaultDateTo,
+  });
+
+  const [statistics, setStatistics] = useState<any>();
+
   const { data: lessonStatistics } = useGetLessonStatistics({
+    size: searchParams.size,
+    page: searchParams.page,
     startDate: searchParams.startDate,
     endDate: searchParams.endDate,
-  })
+  });
 
   useEffect(() => {
     if (lessonStatistics?.data) {
-      setStatistics(lessonStatistics?.data)
+      setStatistics(lessonStatistics?.data);
     }
-  }, [lessonStatistics])
+  }, [lessonStatistics]);
 
-  const handleStartDateChange = (value: string) => {
-    setSearchParams((prev) => ({ ...prev, startDate: value }))
-  }
+  const handleDateFromChange = (value: string) => {
+    setTempSearchParams((prev) => ({ ...prev, startDate: value }));
+  };
 
-  const handleEndDateChange = (value: string) => {
-    setSearchParams((prev) => ({ ...prev, endDate: value }))
-  }
+  const handleDateToChange = (value: string) => {
+    setTempSearchParams((prev) => ({ ...prev, endDate: value }));
+  };
 
-  const formatTime = (seconds: number | null) => {
-    if (seconds === null || seconds === 0) return "N/A"
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${minutes}m ${remainingSeconds}s`
-  }
+  const handleSearch = () => {
+    setSearchParams(tempSearchParams);
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes} daq ${remainingSeconds} sek`;
+  };
 
   const getRatingColor = (rating: number) => {
-    if (rating >= 4) return "bg-green-500"
-    if (rating >= 3) return "bg-yellow-500"
-    return "bg-red-500"
-  }
+    if (rating >= 4) return "bg-green-500";
+    if (rating >= 3) return "bg-yellow-500";
+    return "bg-red-500";
+  };
 
   if (!statistics) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading statistics...</p>
+          <p className="text-muted-foreground">Statistika yuklanmoqda...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Lesson Statistics Dashboard</h1>
-        <p className="text-muted-foreground">Track lesson performance, ratings, and attendance metrics</p>
+        <h1 className="text-3xl font-bold tracking-tight">Darslar statistikasi boshqaruv paneli</h1>
+        <p className="text-muted-foreground">Darslar samaradorligi, baholar va davomat ko'rsatkichlarini kuzating</p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <CalendarIcon className="h-5 w-5" />
-            Filters
+            Filtrlar
           </CardTitle>
-          <CardDescription>Filter statistics by date range</CardDescription>
+          <CardDescription>Statistikani sana oralig'i bo'yicha filtrlang</CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="startDate">From Date</Label>
+            <Label htmlFor="dateFrom">Boshlanish sanasi</Label>
             <Input
-              id="startDate"
+              id="dateFrom"
               type="date"
-              value={searchParams.startDate}
-              onChange={(e) => handleStartDateChange(e.target.value)}
+              value={tempSearchParams.startDate}
+              onChange={(e) => handleDateFromChange(e.target.value)}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="endDate">To Date</Label>
+            <Label htmlFor="dateTo">Tugash sanasi</Label>
             <Input
-              id="endDate"
+              id="dateTo"
               type="date"
-              value={searchParams.endDate}
-              onChange={(e) => handleEndDateChange(e.target.value)}
+              value={tempSearchParams.endDate}
+              onChange={(e) => handleDateToChange(e.target.value)}
             />
+          </div>
+          <div className="space-y-2 flex items-end">
+            <Button onClick={handleSearch} className="w-full md:w-auto">
+              Qidirish
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -100,129 +128,146 @@ const Index = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Lessons (Year)</CardTitle>
+            <CardTitle className="text-sm font-medium">Jami darslar (yil)</CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{statistics.lessonCountForCurrentYear || 0}</div>
-            <p className="text-xs text-muted-foreground">{statistics.lessonCountForInterval || 0} in selected period</p>
+            <div className="text-2xl font-bold">{statistics.lessonCountForCurrentYear}</div>
+            <p className="text-xs text-muted-foreground">{statistics.lessonCountForInterval} tanlangan davrda</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+        <Card className="w-full rounded-2xl shadow-md border border-gray-200/50 dark:border-gray-700/50">
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3">
+            <div>
+              <CardTitle className="text-base font-semibold text-gray-200">
+                Tugallanish darajasi
+              </CardTitle>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className="px-3 py-1 text-xs rounded-full bg-violet-100 text-violet-600 font-medium border border-violet-200">
+                  {tempSearchParams.startDate}
+                </span>
+                <span className="text-xs text-gray-400">→</span>
+                <span className="px-3 py-1 text-xs rounded-full bg-violet-100 text-violet-600 font-medium border border-violet-200">
+                  {tempSearchParams.endDate}
+                </span>
+                <span className="text-xs text-gray-300 italic">
+                  davr davomida
+                </span>
+              </div>
+            </div>
+            <TrendingUp className="h-5 w-5 text-violet-500" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+
+          <CardContent className="flex flex-col gap-1">
+            <div className="text-3xl font-bold text-gray-200">
               {Math.round((statistics.finishedLessonLoadPercentageForInterval || 0) * 100)}%
             </div>
-            <p className="text-xs text-muted-foreground">
-              {statistics.finishedLessonCount || 0} finished, {statistics.canceledLessonCount || 0} canceled
+            <p className="text-sm text-gray-500">
+              <span className="font-medium text-green-600">{statistics.finishedLessonCount}</span> tugallangan,{" "}
+              <span className="font-medium text-red-500">{statistics.canceledLessonCount}</span> bekor qilingan
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Late Time</CardTitle>
+            <CardTitle className="text-sm font-medium">Kechikish vaqti</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatTime(statistics.averageLateTime)}</div>
-            <p className="text-xs text-muted-foreground">Total: {formatTime(statistics.allLateTime)}</p>
+            <div className="text-2xl font-bold">{formatTime(statistics.lessonsLateTime || 0)}</div>
+            <p className="text-xs text-muted-foreground">Jami kechikish vaqti</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Ratings</CardTitle>
+            <CardTitle className="text-sm font-medium">Yillik tugallanish</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{statistics.allLessonRatings || 0}</div>
-            <p className="text-xs text-muted-foreground">From {statistics.subjects?.length || 0} subjects</p>
+            <div className="text-2xl font-bold">
+              {Math.round((statistics.finishedLessonLoadPercentageForCurrentYear || 0) * 100)}%
+            </div>
+            <p className="text-xs text-muted-foreground">Joriy yil bo'yicha</p>
           </CardContent>
         </Card>
       </div>
 
-      {statistics.monthlyLateList && statistics.monthlyLateList.length > 0 && (
+      {statistics.subjects && statistics.subjects.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5" />
-              Monthly Late Statistics
+              <BookOpen className="h-5 w-5" />
+              Fanlar bo'yicha statistika
             </CardTitle>
-            <CardDescription>Late arrival patterns by month</CardDescription>
+            <CardDescription>Har bir fan bo'yicha batafsil ma'lumot</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {statistics.monthlyLateList.map((month: any, index: number) => (
-                <div key={index} className="p-4 border rounded-lg">
-                  <h4 className="font-semibold text-lg">{month.monthName}</h4>
-                  <div className="mt-2 space-y-1">
-                    <p className="text-sm text-muted-foreground">
-                      Late Count: <span className="font-medium">{month.lateCount}</span>
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Total Late Time: <span className="font-medium">{formatTime(month.lateInSeconds)}</span>
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Average: <span className="font-medium">{formatTime(month.averageLateTime)}</span>
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Fan nomi</TableHead>
+                  <TableHead>O'rtacha baho</TableHead>
+                  <TableHead>Jami darslar</TableHead>
+                  <TableHead>Tugallangan</TableHead>
+                  <TableHead>Bekor qilingan</TableHead>
+                  <TableHead>Tugallanish foizi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {statistics.subjects.map((subject: any) => {
+                  const completionRate = subject.lessonCount > 0 
+                    ? Math.round((subject.finishedLessonCount / subject.lessonCount) * 100)
+                    : 0;
+                  
+                  return (
+                    <TableRow key={subject.subjectId}>
+                      <TableCell className="font-medium max-w-[200px] truncate" title={subject.subjectName}>
+                        {subject.subjectName}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${getRatingColor(subject.averageRating)}`}></div>
+                          <span className="font-medium">{subject.averageRating.toFixed(2)}/5</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{subject.lessonCount}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-medium text-green-600">{subject.finishedLessonCount}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`font-medium ${subject.canceledLessonCount > 0 ? 'text-red-500' : 'text-muted-foreground'}`}>
+                          {subject.canceledLessonCount}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <div className="w-full bg-gray-200 rounded-full h-2 max-w-[60px]">
+                            <div 
+                              className={`h-2 rounded-full transition-all duration-300 ${
+                                completionRate >= 80 ? 'bg-green-500' : 
+                                completionRate >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                              }`}
+                              style={{ width: `${completionRate}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-sm font-medium">{completionRate}%</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Star className="h-5 w-5" />
-            Subject Ratings
-          </CardTitle>
-          <CardDescription>Average ratings for subjects in the selected period</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Subject</TableHead>
-                <TableHead>Rating</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {statistics.subjects?.length > 0 ? (
-                statistics.subjects.map((subject: any, index: number) => (
-                  <TableRow key={subject.subjectId || index}>
-                    <TableCell className="max-w-[200px] truncate" title={subject.subjectName}>
-                      {subject.subjectName}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${getRatingColor(subject.averageRating)}`}></div>
-                        <span className="font-medium">{subject.averageRating.toFixed(2)}/5</span>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={2} className="text-center text-muted-foreground">
-                    No subject ratings available for the selected date range.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
     </div>
-  )
-}
+  );
+};
 
-export default Index
+export default Index;
