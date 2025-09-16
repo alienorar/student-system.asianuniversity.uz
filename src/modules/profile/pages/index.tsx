@@ -140,7 +140,7 @@ const Index = () => {
         <Card className="w-full rounded-2xl shadow-md border border-gray-200/50 dark:border-gray-700/50">
           <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3">
             <div>
-              <CardTitle className="text-base font-semibold text-gray-200">
+              <CardTitle className="text-base font-semibold text-primary">
                 Tugallanish darajasi
               </CardTitle>
               <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -151,7 +151,7 @@ const Index = () => {
                 <span className="px-3 py-1 text-xs rounded-full bg-violet-100 text-violet-600 font-medium border border-violet-200">
                   {tempSearchParams.endDate}
                 </span>
-                <span className="text-xs text-gray-300 italic">
+                <span className="text-xs text-primary italic">
                   davr davomida
                 </span>
               </div>
@@ -160,7 +160,7 @@ const Index = () => {
           </CardHeader>
 
           <CardContent className="flex flex-col gap-1">
-            <div className="text-3xl font-bold text-gray-200">
+            <div className="text-3xl font-bold text-primary">
               {Math.round((statistics.finishedLessonLoadPercentageForInterval || 0) * 100)}%
             </div>
             <p className="text-sm text-gray-500">
