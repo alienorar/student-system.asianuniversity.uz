@@ -1,12 +1,12 @@
-import { Schedule, Profile } from "@/modules"
+import { Schedule, Profile, FinishedLesson } from "@/modules"
 import { Calendar, User } from "lucide-react"
 
 
 
 export const routesConfig = [
       {
-        path: "/student-panel",
-        label: "Profil",
+        path: "/student-panel/statistics",
+        label: "Statistika",
         element: Profile,
         icon:User,
         
@@ -15,6 +15,14 @@ export const routesConfig = [
         path: "/student-panel/schedule",
         label: "Dars jadvali",
         element: Schedule,
+        icon:Calendar
+
+    },
+  
+    {
+        path: "/student-panel/finished-lesson",
+        label: "O'tilgan darslar",
+        element: FinishedLesson,
         icon:Calendar
 
     },

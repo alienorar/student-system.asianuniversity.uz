@@ -13,10 +13,14 @@ const Profile = loadable(() => import('./profile/pages'), {
 const Schedule = loadable(() => import('./schedule/pages'), {
   fallback: <Loading />,
 });
+const FinishedLesson = loadable(() => import('./finished-lesson/pages'), {
+  fallback: <Loading />,
+});
 
 export {
     SignIn,
     StudentPanel,
     Profile,
-    Schedule
+    Schedule,
+    FinishedLesson,
 }

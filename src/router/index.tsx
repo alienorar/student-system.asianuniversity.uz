@@ -1,12 +1,32 @@
+import type React from "react"
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom"
 
-import { SignIn,StudentPanel} from "@/modules"
+import { SignIn, StudentPanel } from "@/modules"
 import { routesConfig } from "./routes"
 import App from "@/App"
 import { ThemeProvider } from "@/modules/student-panel/pages"
 
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const accessToken = localStorage.getItem("access_token") || localStorage.getItem("accessToken")
 
+  if (!accessToken) {
+    window.location.href = "/"
+    return null
+  }
 
+  return <>{children}</>
+}
+
+const AuthenticatedRedirect = ({ children }: { children: React.ReactNode }) => {
+  const accessToken = localStorage.getItem("access_token") || localStorage.getItem("accessToken")
+
+  if (accessToken) {
+    window.location.href = "/student-panel"
+    return null
+  }
+
+  return <>{children}</>
+}
 
 const Index = () => {
   const renderRoutes = () =>
@@ -17,17 +37,24 @@ const Index = () => {
 
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<App/>}>
-        {/* Public routes */}
-        <Route path="/" element={<SignIn />} />
+      <Route path="/" element={<App />}>
+        <Route
+          path="/"
+          element={
+            <AuthenticatedRedirect>
+              <SignIn />
+            </AuthenticatedRedirect>
+          }
+        />
 
-        {/* Protected routes */}
         <Route
           path="/student-panel"
           element={
-            <ThemeProvider>
-              <StudentPanel />
-            </ThemeProvider>
+            <ProtectedRoute>
+              <ThemeProvider>
+                <StudentPanel />
+              </ThemeProvider>
+            </ProtectedRoute>
           }
         >
           {renderRoutes()}

@@ -3,7 +3,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { setAccessToken, } from "../../../utils/token-service";
 import { studentLogin } from "../service";
-import { CloudCog } from "lucide-react";
 
 
 export function useSignInMutation() {
@@ -13,9 +12,8 @@ export function useSignInMutation() {
         onSuccess: (response: any) => {
             const access_token = response?.data?.accessToken;
             console.log(response?.data.accessToken);
-            
             setAccessToken(access_token);
-            navigate("/student-panel");
+            navigate("/student-panel/statistics");
         },
         onError: (error: any) => {
             console.log(error)

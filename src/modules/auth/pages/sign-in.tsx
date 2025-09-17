@@ -4,13 +4,13 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { LogIn, Shield } from "lucide-react"
+import { LogIn, Shield, Eye, EyeOff } from "lucide-react"
 import { useSignInMutation } from "../hooks/mutations"
-// import { useSignInMutation } from "../hooks/queries"
 
 export default function SignInPage() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
     const { mutate, isPending, error } = useSignInMutation()
 
     const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -18,6 +18,10 @@ export default function SignInPage() {
         if (username && password) {
             mutate({ username, password }) 
         }
+    }
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword)
     }
 
     return (
@@ -56,14 +60,25 @@ export default function SignInPage() {
                                         className="h-12 rounded-xl"
                                     />
                                 </div>
-                                <div>
+                                <div className="relative">
                                     <Input
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="Parol"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="h-12 rounded-xl"
+                                        className="h-12 rounded-xl pr-12"
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={togglePasswordVisibility}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-5 w-5" />
+                                        ) : (
+                                            <Eye className="h-5 w-5" />
+                                        )}
+                                    </button>
                                 </div>
                                 {error && (
                                     <p className="text-red-500 text-sm text-center">

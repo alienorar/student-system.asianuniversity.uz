@@ -1,4 +1,5 @@
 // import { getRefreshToken, logout, setAccessToken } from "@/utils/token-service";
+import { getRefreshToken, logout, setAccessToken } from "@/utils/token-service";
 import axios from "axios";
 
 export const getAccessToken = () => localStorage.getItem("accessToken");
@@ -15,8 +16,7 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// Optional: Token refresh logic (uncomment if needed)
-/*
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -48,6 +48,6 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-*/
+
 
 export default axiosInstance;

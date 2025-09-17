@@ -3,7 +3,7 @@ import axiosInstance from "@/api";
 
 // ============= SYNC STUDENTS BY EXEL ============
 export async function getStudentSchedule(params:any) {
-  return (await axiosInstance.get(`schedule/student/list`, { params })).data
+  return (await axiosInstance.get(`/api/v1/student/schedule/list`, { params })).data
 }
 
 

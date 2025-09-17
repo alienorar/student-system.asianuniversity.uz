@@ -1,157 +1,69 @@
-"use client"
 
-import type React from "react"
-import { useState, useEffect, createContext, useContext } from "react"
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
-import { Button } from "@/components/ui/button"
-import { Menu, Moon, Sun, Home, BookOpen, Users, BarChart3, Calendar, Settings, LogOut } from "lucide-react"
-import { routesConfig } from "@/router/routes"
-// Import logout function (uncomment if available)
-// import { logout } from "@/utils/token-service";
+"use client";
 
-interface TeacherData {
-  id: string
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  passportNumber: string
-  passportPin: string
-  profileImgUrl: string
-  employeeId: string | null
-  bio: string
-}
+import type React from "react";
+import { useState, useEffect, createContext, useContext } from "react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Menu, Moon, Sun, BookOpen, LogOut } from "lucide-react";
+import { routesConfig } from "@/router/routes";
 
 // Theme Context for Light/Dark Mode
 const ThemeContext = createContext({
   theme: "light",
   toggleTheme: () => {},
-})
-
-// Teacher Data Context
-const TeacherDataContext = createContext<{
-  teacherData: TeacherData
-}>({
-  teacherData: {
-    id: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    passportNumber: "",
-    passportPin: "",
-    profileImgUrl: "",
-    employeeId: null,
-    bio: "",
-  },
-})
+});
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light")
-  const [teacherData, setTeacherData] = useState<TeacherData>({
-    id: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    passportNumber: "",
-    passportPin: "",
-    profileImgUrl: "",
-    employeeId: null,
-    bio: "",
-  })
-  const location = useLocation()
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const location = useLocation();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const token = params.get("token")
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
 
     // Only store the token if it exists in the URL
     if (token) {
-      localStorage.setItem("accessToken", token)
+      localStorage.setItem("accessToken", token);
     }
-
-    const newTeacherData = {
-      id: params.get("id") || localStorage.getItem("teacherId") || "Ma'lumot yo'q",
-      firstName: params.get("firstname") || localStorage.getItem("teacherFirstName") || "Ma'lumot yo'q",
-      lastName: params.get("lastname") || localStorage.getItem("teacherLastName") || "Ma'lumot yo'q",
-      email: params.get("email") || localStorage.getItem("teacherEmail") || "Ma'lumot yo'q",
-      phone: decodeURIComponent(params.get("phone") || localStorage.getItem("teacherPhone") || "Ma'lumot yo'q"),
-      passportNumber: params.get("passport_number") || localStorage.getItem("teacherPassport") || "Ma'lumot yo'q",
-      passportPin: params.get("passport_pin") || localStorage.getItem("teacherPassportPin") || "Ma'lumot yo'q",
-      profileImgUrl: params.get("profile_img_url") || localStorage.getItem("teacherProfileImgUrl") || "",
-      employeeId: params.get("employee_id") || localStorage.getItem("teacherEmployeeId") || null,
-      bio: params.get("bio") || localStorage.getItem("teacherBio") || "Bio ma'lumot yo'q",
-    }
-
-    // Store teacher data in localStorage
-    localStorage.setItem("teacherId", newTeacherData.id)
-    localStorage.setItem("teacherFirstName", newTeacherData.firstName)
-    localStorage.setItem("teacherLastName", newTeacherData.lastName)
-    localStorage.setItem("teacherEmail", newTeacherData.email)
-    localStorage.setItem("teacherPhone", newTeacherData.phone)
-    localStorage.setItem("teacherPassport", newTeacherData.passportNumber)
-    localStorage.setItem("teacherPassportPin", newTeacherData.passportPin)
-    localStorage.setItem("teacherProfileImgUrl", newTeacherData.profileImgUrl)
-    localStorage.setItem("teacherEmployeeId", newTeacherData.employeeId || "")
-    localStorage.setItem("teacherBio", newTeacherData.bio)
-
-    setTeacherData(newTeacherData)
-  }, [location.search])
+  }, [location.search]);
 
   useEffect(() => {
-    document.documentElement.classList.remove("light", "dark")
-    document.documentElement.classList.add(theme)
-    localStorage.setItem("theme", theme)
-  }, [theme])
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light")
-  }
+    setTheme(theme === "light" ? "dark" : "light");
+  };
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      <TeacherDataContext.Provider value={{ teacherData }}>{children}</TeacherDataContext.Provider>
+      {children}
     </ThemeContext.Provider>
-  )
-}
-
-// Mock routes config for demo
-
+  );
+};
 
 export default function DashboardLayout() {
-  const { theme, toggleTheme } = useContext(ThemeContext)
-  const { teacherData } = useContext(TeacherDataContext)
-  const location = useLocation()
-  const navigate = useNavigate()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const { theme, toggleTheme } = useContext(ThemeContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Logout handler
   const handleLogout = () => {
-    // If using a logout function from token-service, call it here
-    // logout(); // Uncomment if logout function is available
-    // Clear localStorage
-    localStorage.removeItem("accessToken")
-    localStorage.removeItem("teacherId")
-    localStorage.removeItem("teacherFirstName")
-    localStorage.removeItem("teacherLastName")
-    localStorage.removeItem("teacherEmail")
-    localStorage.removeItem("teacherPhone")
-    localStorage.removeItem("teacherPassport")
-    localStorage.removeItem("teacherPassportPin")
-    localStorage.removeItem("teacherProfileImgUrl")
-    localStorage.removeItem("teacherEmployeeId")
-    localStorage.removeItem("teacherBio")
-    // Redirect to login page
-    navigate("/")
-  }
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_data");
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-400 via-sky-400 to-blue-800 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 h-full bg-white/95 dark:bg-sidebar/95 backdrop-blur-lg border-r border-white/20 dark:border-sidebar-border shadow-2xl transition-all duration-300 z-50 ${
-          isSidebarOpen ? "w-72" : "w-20"
+          isSidebarOpen ? "w-72" : "w-22"
         }`}
       >
         {/* Sidebar Header */}
@@ -164,7 +76,7 @@ export default function DashboardLayout() {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">
-                    Teacher Panel
+                    Talaba Paneli
                   </h1>
                   <p className="text-sm text-muted-foreground">HEMIS tizimi</p>
                 </div>
@@ -189,7 +101,9 @@ export default function DashboardLayout() {
               to={item.path}
               className={({ isActive }) =>
                 `flex items-center p-3 rounded-xl transition-all duration-200 group ${
-                  isActive ? "bg-gradient-to-r from-teal-500 to-blue-600 text-white shadow-lg" : "hover:bg-accent text-sidebar-foreground"
+                  isActive
+                    ? "bg-gradient-to-r from-teal-500 to-blue-600 text-white shadow-lg"
+                    : "hover:bg-accent text-sidebar-foreground"
                 }`
               }
             >
@@ -199,7 +113,9 @@ export default function DashboardLayout() {
                     <item.icon className={`w-5 h-5 ${isActive ? "text-white" : "text-sidebar-foreground"}`} />
                   </div>
                   {isSidebarOpen && (
-                    <span className={`ml-3 font-medium ${isActive ? "text-white" : "text-sidebar-foreground"}`}>{item.label}</span>
+                    <span className={`ml-3 font-medium ${isActive ? "text-white" : "text-sidebar-foreground"}`}>
+                      {item.label}
+                    </span>
                   )}
                 </>
               )}
@@ -212,13 +128,11 @@ export default function DashboardLayout() {
           <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200/50 dark:border-sidebar-border">
             <div className="flex items-center space-x-3 p-3 rounded-xl bg-accent">
               <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-                {teacherData.firstName?.[0] || "U"}
+                T
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">
-                  {teacherData.firstName} {teacherData.lastName}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">O'qituvchi</p>
+                <p className="text-sm font-medium text-sidebar-foreground truncate">Talaba</p>
+                <p className="text-xs text-muted-foreground truncate">Talaba Paneli</p>
               </div>
             </div>
             <Button
@@ -242,13 +156,15 @@ export default function DashboardLayout() {
               <h2 className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">
                 {routesConfig.find((item) => item.path === location.pathname)?.label || "Dashboard"}
               </h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Xush kelibsiz, {teacherData.firstName} {teacherData.lastName}
-              </p>
+              <p className="text-sm text-muted-foreground mt-1">Xush kelibsiz, Talaba</p>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="icon" onClick={toggleTheme} className="hover:bg-accent rounded-xl">
-                {theme === "light" ? <Moon className="h-5 w-5 text-foreground" /> : <Sun className="h-5 w-5 text-foreground" />}
+                {theme === "light" ? (
+                  <Moon className="h-5 w-5 text-foreground" />
+                ) : (
+                  <Sun className="h-5 w-5 text-foreground" />
+                )}
               </Button>
             </div>
           </div>
@@ -260,7 +176,5 @@ export default function DashboardLayout() {
         </main>
       </div>
     </div>
-  )
+  );
 }
-
-export { TeacherDataContext }
