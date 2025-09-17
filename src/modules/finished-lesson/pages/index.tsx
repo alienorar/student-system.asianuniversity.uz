@@ -37,15 +37,11 @@ interface Subject {
   lessons: Lesson[];
 }
 
-
-
 // Define SubjectOption for filtering (from subject API)
 interface SubjectOption {
   subjectId: number;
   subjectName: string;
 }
-
-
 
 const StudentFeedbackTable = () => {
   const [params, setParams] = useState({
@@ -358,40 +354,40 @@ const StudentFeedbackTable = () => {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full table-fixed">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="text-left p-4 font-semibold text-foreground">
+                    <th className="text-left p-4 font-semibold text-foreground w-[100px]">
                       <div className="flex items-center gap-2">
                         <Hash className="h-4 w-4" />
                         Dars ID
                       </div>
                     </th>
-                    <th className="text-left p-4 font-semibold text-foreground">
+                    <th className="text-left p-4 font-semibold text-foreground w-[200px]">
                       <div className="flex items-center gap-2">
                         <BookOpen className="h-4 w-4" />
                         Fan
                       </div>
                     </th>
-                    <th className="text-left p-4 font-semibold text-foreground">
+                    <th className="text-left p-4 font-semibold text-foreground w-[150px]">
                       <div className="flex items-center gap-2">
                         <Star className="h-4 w-4" />
                         Baho
                       </div>
                     </th>
-                    <th className="text-left p-4 font-semibold text-foreground">
+                    <th className="text-left p-4 font-semibold text-foreground w-[300px]">
                       <div className="flex items-center gap-2">
                         <MessageCircle className="h-4 w-4" />
                         Izoh
                       </div>
                     </th>
-                    <th className="text-left p-4 font-semibold text-foreground">
+                    <th className="text-left p-4 font-semibold text-foreground w-[150px]">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
                         Sana
                       </div>
                     </th>
-                    <th className="text-left p-4 font-semibold text-foreground">
+                    <th className="text-left p-4 font-semibold text-foreground w-[150px]">
                       <div className="flex items-center gap-2">
                         <Star className="h-4 w-4" />
                         Amallar
@@ -405,46 +401,45 @@ const StudentFeedbackTable = () => {
                       key={lesson.id || index}
                       className="border-t border-border/50 hover:bg-muted/20 transition-colors duration-200"
                     >
-                      <td className="p-4">
+                      <td className="p-4 w-[100px] overflow-hidden text-ellipsis whitespace-nowrap">
                         <span className="text-sm font-medium text-muted-foreground">
                           #{lesson.id}
                         </span>
                       </td>
-                      <td className="p-4">
+                      <td className="p-4 w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
                         <span className="text-sm font-medium text-foreground" title={lesson.subjectName}>
                           {lesson.subjectName}
                         </span>
                       </td>
-                   <td className="p-4">
-  {(() => {
-    const hasFeedback = !!lesson.feedback;
-    const r = lesson.feedback?.rating ?? 0;
+                      <td className="p-4 w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">
+                        {(() => {
+                          const hasFeedback = !!lesson.feedback;
+                          const r = lesson.feedback?.rating ?? 0;
 
-    if (!hasFeedback) {
-      return <span className="text-sm text-muted-foreground italic">Baholanmagan</span>;
-    }
+                          if (!hasFeedback) {
+                            return <span className="text-sm text-muted-foreground italic">Baholanmagan</span>;
+                          }
 
-    return (
-      <div className="flex items-center gap-2">
-        <Badge className={`${getBadgeColor(r)} text-xs px-2 py-1`}>
-          <div className="flex items-center gap-1">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className={`h-3 w-3 ${i < r ? getStarColor(r) + " fill-current" : "text-gray-300"}`}
-              />
-            ))}
-          </div>
-        </Badge>
-        <span className="text-sm font-medium text-foreground">{r}/5</span>
-      </div>
-    );
-  })()}
-</td>
-
-                      <td className="p-4 max-w-xs">
+                          return (
+                            <div className="flex items-center gap-2">
+                              <Badge className={`${getBadgeColor(r)} text-xs px-2 py-1`}>
+                                <div className="flex items-center gap-1">
+                                  {Array.from({ length: 5 }).map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={`h-3 w-3 ${i < r ? getStarColor(r) + " fill-current" : "text-gray-300"}`}
+                                    />
+                                  ))}
+                                </div>
+                              </Badge>
+                              <span className="text-sm font-medium text-foreground">{r}/5</span>
+                            </div>
+                          );
+                        })()}
+                      </td>
+                      <td className="p-4 w-[300px] overflow-hidden">
                         {lesson.feedback?.comment ? (
-                          <p className="text-sm text-foreground leading-relaxed line-clamp-2 break-words">
+                          <p className="text-sm text-foreground leading-relaxed line-clamp-2">
                             {lesson.feedback.comment}
                           </p>
                         ) : (
@@ -453,7 +448,7 @@ const StudentFeedbackTable = () => {
                           </span>
                         )}
                       </td>
-                      <td className="p-4">
+                      <td className="p-4 w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">
                         {lesson.feedback?.createdAt ? (
                           <span className="text-xs text-muted-foreground">
                             {formatDate(lesson.feedback.createdAt)}
@@ -462,7 +457,7 @@ const StudentFeedbackTable = () => {
                           <span className="text-xs text-muted-foreground">-</span>
                         )}
                       </td>
-                      <td className="p-4">
+                      <td className="p-4 w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">
                         {!lesson.feedback && (
                           <Button
                             onClick={() => openModal(lesson.id)}
