@@ -1,4 +1,3 @@
-
 "use client";
 
 import type React from "react";
@@ -11,7 +10,7 @@ import { routesConfig } from "@/router/routes";
 // Theme Context for Light/Dark Mode
 const ThemeContext = createContext({
   theme: "light",
-  toggleTheme: () => {},
+  toggleTheme: () => { },
 });
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -62,9 +61,8 @@ export default function DashboardLayout() {
     <div className="min-h-screen bg-gradient-to-br from-teal-400 via-sky-400 to-blue-800 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full bg-white/95 dark:bg-sidebar/95 backdrop-blur-lg border-r border-white/20 dark:border-sidebar-border shadow-2xl transition-all duration-300 z-50 ${
-          isSidebarOpen ? "w-72" : "w-22"
-        }`}
+        className={`fixed top-0 left-0 h-full bg-white/95 dark:bg-sidebar/95 backdrop-blur-lg border-r border-white/20 dark:border-sidebar-border shadow-2xl transition-all duration-300 z-50 ${isSidebarOpen ? "w-72" : "w-22"
+          }`}
       >
         {/* Sidebar Header */}
         <div className="p-6 border-b border-gray-200/50 dark:border-sidebar-border">
@@ -95,32 +93,33 @@ export default function DashboardLayout() {
 
         {/* Navigation */}
         <nav className="p-4 space-y-2">
-          {routesConfig?.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex items-center p-3 rounded-xl transition-all duration-200 group ${
-                  isActive
+          {routesConfig
+            .filter((item) => item.showInsideMenu) // Filter routes with showInSideMenu: true
+            .map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center p-3 rounded-xl transition-all duration-200 group ${isActive
                     ? "bg-gradient-to-r from-teal-500 to-blue-600 text-white shadow-lg"
                     : "hover:bg-accent text-sidebar-foreground"
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <div className={`p-2 rounded-lg ${isActive ? "bg-white/20" : "bg-accent group-hover:bg-accent/80"}`}>
-                    <item.icon className={`w-5 h-5 ${isActive ? "text-white" : "text-sidebar-foreground"}`} />
-                  </div>
-                  {isSidebarOpen && (
-                    <span className={`ml-3 font-medium ${isActive ? "text-white" : "text-sidebar-foreground"}`}>
-                      {item.label}
-                    </span>
-                  )}
-                </>
-              )}
-            </NavLink>
-          ))}
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className={`p-2 rounded-lg ${isActive ? "bg-white/20" : "bg-accent group-hover:bg-accent/80"}`}>
+                      <item.icon className={`w-5 h-5 ${isActive ? "text-white" : "text-sidebar-foreground"}`} />
+                    </div>
+                    {isSidebarOpen && (
+                      <span className={`ml-3 font-medium ${isActive ? "text-white" : "text-sidebar-foreground"}`}>
+                        {item.label}
+                      </span>
+                    )}
+                  </>
+                )}
+              </NavLink>
+            ))}
         </nav>
 
         {/* Sidebar Footer */}

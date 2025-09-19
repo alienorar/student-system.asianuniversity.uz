@@ -16,6 +16,9 @@ const Schedule = loadable(() => import('./schedule/pages'), {
 const FinishedLesson = loadable(() => import('./finished-lesson/pages'), {
   fallback: <Loading />,
 });
+const SubjectLesson = loadable(() => import('./subject-lesson/pages'), {
+  fallback: <Loading />,
+});
 
 export {
     SignIn,
@@ -23,4 +26,5 @@ export {
     Profile,
     Schedule,
     FinishedLesson,
+    SubjectLesson,
 }

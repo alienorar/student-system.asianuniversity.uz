@@ -7,10 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, TrendingUp, Clock, BookOpen, Star} from "lucide-react"
+import { CalendarIcon, TrendingUp, Clock, BookOpen, Star } from "lucide-react"
 import { useGetLessonStatistics } from "../hooks/queries"
+import { useNavigate } from "react-router-dom"
 
 const Index = () => {
+ const navigate = useNavigate();
+
   // Sukut bo'yicha sanalarni o'rnatish
   const today = new Date();
   const currentYear = today.getFullYear();
@@ -58,6 +61,11 @@ const Index = () => {
 
   const handleSearch = () => {
     setSearchParams(tempSearchParams);
+  };
+
+  // Handle row click to navigate to single subject page
+  const handleRowClick = (subjectId: string) => {
+    navigate(`/student-panel/statistics/${subjectId}`);
   };
 
   const formatTime = (seconds: number) => {
@@ -140,7 +148,7 @@ const Index = () => {
         <Card className="w-full rounded-2xl shadow-md border border-gray-200/50 dark:border-gray-700/50">
           <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3">
             <div>
-              <CardTitle className="text-base font-semibold text-gray-200">
+              <CardTitle className="text-base font-semibold text-primary">
                 Tugallanish darajasi
               </CardTitle>
               <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -151,7 +159,7 @@ const Index = () => {
                 <span className="px-3 py-1 text-xs rounded-full bg-violet-100 text-violet-600 font-medium border border-violet-200">
                   {tempSearchParams.endDate}
                 </span>
-                <span className="text-xs text-gray-300 italic">
+                <span className="text-xs text-primary italic">
                   davr davomida
                 </span>
               </div>
@@ -160,7 +168,7 @@ const Index = () => {
           </CardHeader>
 
           <CardContent className="flex flex-col gap-1">
-            <div className="text-3xl font-bold text-gray-200">
+            <div className="text-3xl font-bold text-primary">
               {Math.round((statistics.finishedLessonLoadPercentageForInterval || 0) * 100)}%
             </div>
             <p className="text-sm text-gray-500">
@@ -223,7 +231,11 @@ const Index = () => {
                     : 0;
                   
                   return (
-                    <TableRow key={subject.subjectId}>
+                    <TableRow 
+                      key={subject.subjectId} 
+                      onClick={() => handleRowClick(subject.subjectId)} // Add onClick handler
+                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" // Add cursor and hover styles
+                    >
                       <TableCell className="font-medium max-w-[200px] truncate" title={subject.subjectName}>
                         {subject.subjectName}
                       </TableCell>
