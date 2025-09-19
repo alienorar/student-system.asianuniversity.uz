@@ -7,10 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { CalendarIcon, TrendingUp, Clock, BookOpen, Star} from "lucide-react"
+import { CalendarIcon, TrendingUp, Clock, BookOpen, Star } from "lucide-react"
 import { useGetLessonStatistics } from "../hooks/queries"
+import { useNavigate } from "react-router-dom"
 
 const Index = () => {
+ const navigate = useNavigate();
+
   // Sukut bo'yicha sanalarni o'rnatish
   const today = new Date();
   const currentYear = today.getFullYear();
@@ -58,6 +61,11 @@ const Index = () => {
 
   const handleSearch = () => {
     setSearchParams(tempSearchParams);
+  };
+
+  // Handle row click to navigate to single subject page
+  const handleRowClick = (subjectId: string) => {
+    navigate(`/student-panel/statistics/${subjectId}`);
   };
 
   const formatTime = (seconds: number) => {
@@ -223,7 +231,11 @@ const Index = () => {
                     : 0;
                   
                   return (
-                    <TableRow key={subject.subjectId}>
+                    <TableRow 
+                      key={subject.subjectId} 
+                      onClick={() => handleRowClick(subject.subjectId)} // Add onClick handler
+                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" // Add cursor and hover styles
+                    >
                       <TableCell className="font-medium max-w-[200px] truncate" title={subject.subjectName}>
                         {subject.subjectName}
                       </TableCell>
