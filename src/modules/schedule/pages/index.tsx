@@ -6,8 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, Users, MapPin, BookOpen, GraduationCap, ChevronRight, Star } from "lucide-react";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar, Clock, Users, MapPin,  GraduationCap, ChevronRight, Star } from "lucide-react";
 import CameraModal from "./modal";
 import { useGetStudentSchedule } from "../hooks/queries";
 
@@ -67,7 +67,7 @@ interface ScheduleItem {
 }
 
 export default function SchedulePage() {
-  const [params, setParams] = useState({
+  const [params, _setParams] = useState({
     size: 100,
     page: 0,
     time: "WEEK", // or "TODAY"
@@ -83,12 +83,12 @@ export default function SchedulePage() {
     setCurrentLessonId(null);
   };
 
-  const handleTimeChange = (value: string) => {
-    setParams((prev) => ({ ...prev, time: value }));
-    if (value === "TODAY") {
-      setSelectedDay(formatUnixTimestamp(Date.now() / 1000));
-    }
-  };
+  // const handleTimeChange = (value: string) => {
+  //   setParams((prev) => ({ ...prev, time: value }));
+  //   if (value === "TODAY") {
+  //     setSelectedDay(formatUnixTimestamp(Date.now() / 1000));
+  //   }
+  // };
 
   // Safely access content with fallback
   const content = data?.data?.content || [];
@@ -134,7 +134,7 @@ export default function SchedulePage() {
               <div className="flex items-center gap-4">
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
-                  <Select onValueChange={handleTimeChange} defaultValue={params.time}>
+                  {/* <Select onValueChange={handleTimeChange} defaultValue={params.time}>
                     <SelectTrigger className="relative w-[200px] bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 focus:ring-2 focus:ring-blue-500/50">
                       <SelectValue placeholder="Vaqtni tanlang" />
                     </SelectTrigger>
@@ -152,7 +152,7 @@ export default function SchedulePage() {
                         </div>
                       </SelectItem>
                     </SelectContent>
-                  </Select>
+                  </Select> */}
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>

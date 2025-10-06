@@ -12,7 +12,7 @@ import { useGetLessonStatistics } from "../hooks/queries"
 import { useNavigate } from "react-router-dom"
 
 const Index = () => {
- const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // Sukut bo'yicha sanalarni o'rnatish
   const today = new Date();
@@ -134,39 +134,22 @@ const Index = () => {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Jami darslar (yil)</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+        <Card className="w-full rounded-2xl shadow-md border border-gray-200/50 dark:border-gray-700/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-primary">Jami darslar (yil)</CardTitle>
+            <BookOpen className="h-5 w-5 text-violet-500" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{statistics.lessonCountForCurrentYear}</div>
-            <p className="text-xs text-muted-foreground">{statistics.lessonCountForInterval} tanlangan davrda</p>
+          <CardContent className="flex flex-col gap-1">
+            <div className="text-3xl font-bold text-primary">{statistics.lessonCountForCurrentYear}</div>
+            <p className="text-sm text-gray-500">{statistics.lessonCountForInterval} tanlangan davrda</p>
           </CardContent>
         </Card>
 
         <Card className="w-full rounded-2xl shadow-md border border-gray-200/50 dark:border-gray-700/50">
-          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3">
-            <div>
-              <CardTitle className="text-base font-semibold text-primary">
-                Tugallanish darajasi
-              </CardTitle>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 text-xs rounded-full bg-violet-100 text-violet-600 font-medium border border-violet-200">
-                  {tempSearchParams.startDate}
-                </span>
-                <span className="text-xs text-gray-400">→</span>
-                <span className="px-3 py-1 text-xs rounded-full bg-violet-100 text-violet-600 font-medium border border-violet-200">
-                  {tempSearchParams.endDate}
-                </span>
-                <span className="text-xs text-primary italic">
-                  davr davomida
-                </span>
-              </div>
-            </div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-primary">Tugallanish darajasi</CardTitle>
             <TrendingUp className="h-5 w-5 text-violet-500" />
           </CardHeader>
-
           <CardContent className="flex flex-col gap-1">
             <div className="text-3xl font-bold text-primary">
               {Math.round((statistics.finishedLessonLoadPercentageForInterval || 0) * 100)}%
@@ -175,30 +158,40 @@ const Index = () => {
               <span className="font-medium text-green-600">{statistics.finishedLessonCount}</span> tugallangan,{" "}
               <span className="font-medium text-red-500">{statistics.canceledLessonCount}</span> bekor qilingan
             </p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 text-xs rounded-full bg-violet-100 text-violet-600 font-medium border border-violet-200">
+                {tempSearchParams.startDate}
+              </span>
+              <span className="text-xs text-gray-400">→</span>
+              <span className="px-3 py-1 text-xs rounded-full bg-violet-100 text-violet-600 font-medium border border-violet-200">
+                {tempSearchParams.endDate}
+              </span>
+              <span className="text-xs text-primary italic">davr davomida</span>
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Kechikish vaqti</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+        <Card className="w-full rounded-2xl shadow-md border border-gray-200/50 dark:border-gray-700/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-primary">Kechikish vaqti</CardTitle>
+            <Clock className="h-5 w-5 text-violet-500" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatTime(statistics.lessonsLateTime || 0)}</div>
-            <p className="text-xs text-muted-foreground">Jami kechikish vaqti</p>
+          <CardContent className="flex flex-col gap-1">
+            <div className="text-3xl font-bold text-primary">{formatTime(statistics.lessonsLateTime || 0)}</div>
+            <p className="text-sm text-gray-500">Jami kechikish vaqti</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Yillik tugallanish</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
+        <Card className="w-full rounded-2xl shadow-md border border-gray-200/50 dark:border-gray-700/50">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-base font-semibold text-primary">Yillik tugallanish</CardTitle>
+            <Star className="h-5 w-5 text-violet-500" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="flex flex-col gap-1">
+            <div className="text-3xl font-bold text-primary">
               {Math.round((statistics.finishedLessonLoadPercentageForCurrentYear || 0) * 100)}%
             </div>
-            <p className="text-xs text-muted-foreground">Joriy yil bo'yicha</p>
+            <p className="text-sm text-gray-500">Joriy yil bo'yicha</p>
           </CardContent>
         </Card>
       </div>
@@ -226,13 +219,13 @@ const Index = () => {
               </TableHeader>
               <TableBody>
                 {statistics.subjects.map((subject: any) => {
-                  const completionRate = subject.lessonCount > 0 
+                  const completionRate = subject.lessonCount > 0
                     ? Math.round((subject.finishedLessonCount / subject.lessonCount) * 100)
                     : 0;
-                  
+
                   return (
-                    <TableRow 
-                      key={subject.subjectId} 
+                    <TableRow
+                      key={subject.subjectId}
                       onClick={() => handleRowClick(subject.subjectId)} // Add onClick handler
                       className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800" // Add cursor and hover styles
                     >
@@ -259,11 +252,10 @@ const Index = () => {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <div className="w-full bg-gray-200 rounded-full h-2 max-w-[60px]">
-                            <div 
-                              className={`h-2 rounded-full transition-all duration-300 ${
-                                completionRate >= 80 ? 'bg-green-500' : 
-                                completionRate >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-                              }`}
+                            <div
+                              className={`h-2 rounded-full transition-all duration-300 ${completionRate >= 80 ? 'bg-green-500' :
+                                  completionRate >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                                }`}
                               style={{ width: `${completionRate}%` }}
                             ></div>
                           </div>
