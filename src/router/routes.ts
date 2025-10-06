@@ -9,13 +9,15 @@ export const routesConfig = [
         label: "Statistika",
         element: Profile,
         icon:User,
+        showInsideMenu:true
         
     },
     {
         path: "/student-panel/schedule",
         label: "Dars jadvali",
         element: Schedule,
-        icon:Calendar
+        icon:Calendar,
+        showInsideMenu:true
 
     },
   
@@ -23,7 +25,8 @@ export const routesConfig = [
         path: "/student-panel/finished-lesson",
         label: "O'tilgan darslar",
         element: FinishedLesson,
-        icon:Calendar
+        icon:Calendar,
+        showInsideMenu:true
 
     },
   
