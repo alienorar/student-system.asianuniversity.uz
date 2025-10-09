@@ -86,7 +86,7 @@ export default function DashboardLayout() {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">
-                    Teacher Panel
+                  Student Panel
                   </h1>   </div>
               </div>
             )}
@@ -149,7 +149,7 @@ export default function DashboardLayout() {
                 {routesConfig.find((item) => item.path === location.pathname)?.label || "Dashboard"}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Welcome to the Teacher Panel
+               Student Panelga xush kelibsiz !
               </p>
             </div>
             <div className="flex items-center space-x-4">
